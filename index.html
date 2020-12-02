@@ -1,1 +1,430 @@
-Hello World
+<!DOCTYPE html>
+
+<html>
+    <header>
+        <title>
+            Readability experiment
+        </title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    </header>
+    <style>
+        .div_margin_global {
+            max-width: 60%;
+            margin: auto;
+            padding: 10px;
+            background-color: ghostwhite;
+            min-height: 100vh;
+        }
+
+        .center_h1 {
+            text-align: center;
+        }
+
+        .button_div_style {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 30%;
+            flex-grow: 0;
+            flex-basis: 33%;
+
+        }
+
+        .item {
+            flex: 0 32%;
+        }
+    </style>
+    <body>
+        <div id="main_div" class="div_margin_global">
+            <div id="temporary_div">
+                <h1>Readability Experiment</h1>
+                <h2>Use of personal data:</h2>
+                <p>
+                    All of the data collected during the experiment will only be used for academic purposes, 
+                    the data will be kept anonymous and won't be used for any commercial application.
+                    By partecipating you agree on letting us use the data that will be collected during the experiment.
+                    After the completion of the experiment you will still have 24 hours to contact us and be removed from the experiment,
+                    in that case all the data collected from you will be eliminated.
+                </p>
+
+                <h2>Explanation</h2>
+                <p>
+                    The objective of this experiment is to compare two casing styles frequently used by programmers. We want to understand whether one 
+                    of the two styles is easier to read.<br>
+                    The first style would be kebab-case, that consists of putting a minus ("-") between each word, written in lowercase,
+                    for example this-is-an-example-of-kebab-case.<br> 
+                    The second would be camelCase, in which the words are attached togheter but with the first character written in upper case, excluded the first word.
+                    An example is, thisIsAnExampleOfCamelCase.<br>
+                </p>
+
+                <h2>How it works</h2>
+                <p>
+                    The experiment is divided in three parts, in the kebab-case part you will be shown a set of words, separated by spaces, that you will have 
+                    to memorize, then you can press the start button. Afterwards you will be shown six strings written in kebab-case and you will need to find the 
+                    one we asked you to memorize. Choosing a wrong answer will simply color it red. There will be 10 such phases for the kebab-case.<br>
+                    The second part of the experiment is similar to the first one but it will be for the camelCase instead.<br>
+                    In the final part of the experiment you will be shown a set of words, separated by spaces, to memorize but these time after pressing the start 
+                    button you will be shown 12 strings, mixed camel and kebab case, and will have to find the one that matches what you have memorized.<br>
+                    Do not reload the page during the experiment.
+                </p>
+
+                <label>Please enter your age here:</label>
+                <input id="input_age" class="form-control" placeholder="Please insert your age" type="number" min="1" max="99" />
+                <br>
+                <button class="btn btn-outline-primary btn-lg" onclick="start_experiment()">Start experiment</button>
+            </div>
+        </div>
+    </body>
+    <script>
+        //list contain object: 
+        //  { 
+        //      time : x,
+        //      number of error : y
+        //   }
+        var time_list_cammel = [];
+        var time_list_kebab = [];
+        var mistake = 0;
+
+        //second experiment
+        var kebab_found = 0;
+        var cammel_found = 0;
+        
+
+        const date_experiment = new Date();//date of the experiment
+        
+        // global variable for counting the time of an experiment, the difference is the time
+        var test_begin;
+        var test_end;
+
+        var subject_age = 0;//age of the subject
+
+        var question_counter = 0;//counter to keep trak of the experiment
+
+        function start_experiment() {
+            let age = document.getElementById("input_age").value;
+            if (age === "") {
+                alert("please insert your age in the field");
+                return;
+            }
+            subject_age = age;
+
+            start_question();
+        }
+
+        function start_question() {
+            var tmp_div = document.getElementById("temporary_div");
+            tmp_div.remove();//remove the body
+
+            if (question_counter < 20) {//kebab-case or cammelCase
+                let word_case = question_counter < 10 ? "kebab-case" : "cammelCase";
+
+                let div = document.getElementById("main_div");
+
+                let new_div = document.createElement("div");
+                new_div.setAttribute("id","temporary_div");
+
+                let h3_element = document.createElement("h3");
+                h3_element.setAttribute("class","center_h1");
+
+                let node = document.createTextNode(correct_word[question_counter % 10]);
+                h3_element.appendChild(node);
+                
+
+                let h1_element = document.createElement("h1");
+                let node2 = document.createTextNode(word_case);
+                h1_element.appendChild(node2);
+                new_div.appendChild(h1_element);
+
+                let description = document.createElement("p");
+                let node_text = document.createTextNode(question_counter < 10 ? description_text_kebab: description_text_camel);
+                description.appendChild(node_text);
+                new_div.appendChild(description);
+
+                new_div.appendChild(h3_element);
+
+                let new_button = document.createElement("button");
+                new_button.setAttribute("class","btn btn-outline-primary btn-lg");
+                new_button.setAttribute("onclick","start_answer()");
+                let button_node = document.createTextNode("Start");
+                new_button.appendChild(button_node);
+                new_div.appendChild(new_button);
+
+                div.appendChild(new_div);
+
+            } else if (question_counter >= 30) {
+                let div = document.getElementById("main_div");
+
+                let h1_el = document.createElement("h1");
+                h1_el.setAttribute("class","center_h1");
+                let h1_text_node = document.createTextNode("Thank you for the partacipation");
+                h1_el.appendChild(h1_text_node);
+                div.appendChild(h1_el);
+
+                let paragraph = document.createElement("p");
+                let paragraph_node = document.createTextNode("Thank you for partecipating in the experiment, please press the button to download the results and send them to the examineer.");
+                paragraph.appendChild(paragraph_node);
+                div.appendChild(paragraph);
+
+                let btn = document.createElement("button");
+                btn.setAttribute("class","btn btn-success btn-lg");
+                btn.setAttribute("onclick","download()");
+                let btn_text = document.createTextNode("Download result");
+                btn.appendChild(btn_text);
+                div.appendChild(btn);
+            } else {//mixed question case
+                let div = document.getElementById("main_div");
+
+                let new_div = document.createElement("div");
+                new_div.setAttribute("id","temporary_div");
+
+                let h1_element = document.createElement("h1");
+                let node = document.createTextNode("kebab or cammel");
+                h1_element.appendChild(node);
+                new_div.appendChild(h1_element);
+
+                let description = document.createElement("p");
+                let node_text = document.createTextNode(description_text_mixed);
+                description.appendChild(node_text);
+                new_div.appendChild(description);
+
+                let word = document.createElement("h3");
+                let node2 = document.createTextNode(correct_word[question_counter % 10]);
+                word.setAttribute("class","center_h1");
+                word.appendChild(node2);
+
+                new_div.appendChild(word);
+
+                let new_button = document.createElement("button");
+                new_button.setAttribute("class","btn btn-outline-primary btn-lg");
+                new_button.setAttribute("onclick","mixed_answer()");
+                let button_node = document.createTextNode("Start");
+                new_button.appendChild(button_node);
+                new_div.appendChild(new_button);
+
+                div.appendChild(new_div);
+            }
+        }
+
+        function mixed_answer() {
+            let tmp_div = document.getElementById("temporary_div");
+            tmp_div.remove();//remove the body
+
+            let current_correct_word = correct_word[question_counter % 10];
+            let current_wrong_words = incorrect_word[question_counter % 10];
+
+            let button_lits = [];
+
+            let correct_kebab = document.createElement("button");
+            correct_kebab.setAttribute("onclick","correctKebab()");
+            correct_kebab.setAttribute("class","btn btn-light btn-lg item");
+            let kebab_text_node = document.createTextNode(toKebabCase(current_correct_word));
+            correct_kebab.appendChild(kebab_text_node);
+            button_lits.push(correct_kebab);
+
+            let correct_camel = document.createElement("button");
+            correct_camel.setAttribute("onclick","correctCamel()");
+            correct_camel.setAttribute("class","btn btn-light btn-lg item");
+            let camel_text_node = document.createTextNode(toCamelCase(current_correct_word));
+            correct_camel.appendChild(camel_text_node);
+            button_lits.push(correct_camel);
+
+            for (let i = 0; i < current_wrong_words.length; ++i) {
+                let incorrect_button_camel = document.createElement("button");
+                incorrect_button_camel.setAttribute("id",i);
+                incorrect_button_camel.setAttribute("class","btn btn-light btn-lg item");
+                incorrect_button_camel.setAttribute("onclick","wrongAnswer("+i+")");
+                let tmp = document.createTextNode(toCamelCase(current_wrong_words[i]));
+                incorrect_button_camel.appendChild(tmp);
+                button_lits.push(incorrect_button_camel);
+
+                let incorrect_button_kebab = document.createElement("button");
+                incorrect_button_kebab.setAttribute("id",i + current_wrong_words.length)
+                incorrect_button_kebab.setAttribute("class","btn btn-light btn-lg item");
+                incorrect_button_kebab.setAttribute("onclick","wrongAnswer("+(i + current_wrong_words.length)+")");
+                let tmp2 = document.createTextNode(toKebabCase(current_wrong_words[i]));
+                incorrect_button_kebab.appendChild(tmp2);
+                button_lits.push(incorrect_button_kebab);
+            }
+
+            button_lits.sort( () => Math.random() - 0.5);//sort the list of button
+
+            let div = document.getElementById("main_div");
+
+            let new_div = document.createElement("div");
+            new_div.setAttribute("id","temporary_div");
+            new_div.setAttribute("class","button_div_style");
+
+            button_lits.forEach( el => new_div.appendChild(el));
+
+            div.appendChild(new_div);
+        }
+
+        function start_answer() {
+            let tmp_div = document.getElementById("temporary_div");
+            tmp_div.remove();//remove the body
+
+            let isKebab = question_counter < 10;
+
+            let current_correct_word = correct_word[question_counter % 10];
+            let current_wrong_words = incorrect_word[question_counter % 10];
+
+            let button_lits = [];
+
+            let correct_button = document.createElement("button");
+            correct_button.setAttribute("onclick","correctAnswer()");
+            correct_button.setAttribute("class","btn btn-light btn-lg item");
+            let correct_text_node;
+            if (isKebab) {
+                correct_text_node = document.createTextNode(toKebabCase(current_correct_word));
+            } else {
+                correct_text_node = document.createTextNode(toCamelCase(current_correct_word));
+            }
+            correct_button.appendChild(correct_text_node);
+            button_lits.push(correct_button);
+
+            for (let i = 0; i < current_wrong_words.length; ++i) {
+                let incorrect_button = document.createElement("button");
+                incorrect_button.setAttribute("onclick","wrongAnswer("+ i +")");
+                incorrect_button.setAttribute("class","btn btn-light btn-lg item");
+                let incorrect_text_node;
+                if (isKebab) {
+                    incorrect_text_node = document.createTextNode(toKebabCase(current_wrong_words[i]));
+                } else {
+                    incorrect_text_node = document.createTextNode(toCamelCase(current_wrong_words[i]));
+                }
+                incorrect_button.appendChild(incorrect_text_node);
+                incorrect_button.setAttribute("id",i);
+                button_lits.push(incorrect_button);
+            }
+
+            button_lits.sort( () => Math.random() - 0.5);//sort the list of button
+
+            let div = document.getElementById("main_div");
+
+            let new_div = document.createElement("div");
+            new_div.setAttribute("id","temporary_div");
+            new_div.setAttribute("class","button_div_style");
+
+            button_lits.forEach( el => new_div.appendChild(el));
+
+            div.appendChild(new_div);
+            let tmp_date = new Date();
+            test_begin = tmp_date.getTime();
+        }
+
+        function correctAnswer() {
+            let tmp_date = new Date();
+            test_end = tmp_date.getTime();
+
+            let new_object = {};
+            new_object.time = test_end - test_begin;
+            new_object.mistake = mistake;
+            new_object.word = correct_word[question_counter % 10];
+
+            if (question_counter < 10) {
+                time_list_kebab.push(new_object);
+            } else {
+                time_list_cammel.push(new_object);
+            }
+
+            mistake = 0;
+            question_counter += 1;
+
+            start_question();
+            console.log("correct")
+        }
+
+        function wrongAnswer( id_) {
+            console.log("wrong")
+            mistake += 1;
+
+            let incorrect_btn = document.getElementById(id_);
+            incorrect_btn.setAttribute("class","btn btn-danger btn-lg item");
+        }
+
+        function correctKebab() {
+            kebab_found += 1;
+            question_counter += 1;
+
+            start_question();
+        }
+
+        function correctCamel() {
+            cammel_found += 1;
+            question_counter += 1;
+
+            start_question();
+        }
+ 
+        //-----functionality----------------
+        function toCamelCase(word){
+            let tmp=word.split(' ');
+            let toReturn=tmp[0];
+            for(let i=1; i<tmp.length;i++){
+                toReturn+=tmp[i].charAt(0).toUpperCase()+tmp[i].slice(1);
+            }
+            return toReturn;
+        }
+
+        function toKebabCase(word){
+            let tmp = word.split(' ');
+            return tmp.join("-");
+        }
+
+        function download() {
+            let tmp_json = {};
+            tmp_json.kebab_found = kebab_found;
+            tmp_json.cammel_found = cammel_found;
+
+            let json_file = {};
+            json_file.kebab_list = time_list_kebab;
+            json_file.cammel_list = time_list_cammel;
+            json_file.second_experiment = tmp_json;
+            json_file.age = subject_age;
+            json_file.date = date_experiment;
+
+            let element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(json_file)));
+            element.setAttribute('download', 'answer.json');
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+
+        //----------------list word------------------------------
+        const correct_word = [
+            "new value output",
+            "random input value",
+            "begin sequence integer",
+            "is result real",
+            "resolution difference",
+            "software manager",
+            "screen width and height",
+            "network connection refused",
+            "get class name first",
+            "save data in storage"
+        ];
+        const incorrect_word = [
+            ["now value output" , "new volume output", "new value ouput", "new value outtput","new value utpu"],
+            ["ramdom input value" , "random imput value", "random input vallue", "randon input value", "random input volue"],
+            ["begim sequence integer", "begin sequnce integer", "begin sequence intger", "began sequence intteger", "begin secuence integer"],
+            ["is resolt real", "is results reals", "is resullt real", "is ressult real", "is result rael"],
+            ["resulotion difference", "resolution diference", "resolutiun diffrence", "resolution diferenc", "resolutiun differece"],
+            ["softuare manager","sofware manager","software meneger","softwae managr","softvare managar"],
+            ["scren width and heigt", "screen widht and heigth" ,"screen widh and heght" ,"screen widt and heigh" ,"screen wedth and hight"],
+            ["nework connection refusd", "networks conection refused", "network connecton refued", "nettwork connecttion refused", "nettwork connection reused"],
+            ["got class name first", "get class nane first", "get class name flirt", "get clase name first", "get class names firs"],
+            ["save data on storag", "safe data in storage", "save date in stoage", "save dota in storega", "save data in stoiage"]
+        ];
+
+        //------text
+        var description_text_kebab = "Please memorize these words, and when you are ready press the button to start the test. As explained before you will be shown 6 strings written in kebab-case and need to find the correct one.";
+
+        var description_text_camel = "Please memorize these words, and when you are ready press the button to start the test. As explained before you will be shown 6 strings written in camelCase and need to find the correct one.";
+
+        var description_text_mixed = "Please memorize these words, and when you are ready press the button to start the test. You will be shown 12 strings, 6 of which will be camelCase, and 6 will be kebab-case. You have to find the correct one.";
+    </script>
+</html>
